@@ -408,6 +408,16 @@
 				"internalType": "uint256",
 				"name": "missedOpportunities",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "payedExtra",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalTree",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
