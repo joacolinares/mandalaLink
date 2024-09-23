@@ -16,6 +16,10 @@ export default function Home() {
   const [totalTree, setTotalTree] = useState("");
   const [balanceContrato, setBalanceContrato] = useState("");
   const [balanceVault, setBalanceVault] = useState("");
+  const [balancePersonal, setBalancePersonal] = useState("");
+  const [totalPayed, setTotalPayed] = useState("");
+  const [totalDistributed, setTotalDistributed] = useState("");
+  const [totalExtra, setTotalExtra] = useState("");
   const [infoPools, setInfoPools] = useState({
     data: [
       { pool: 1, usersCount: 0, wallets: [] },
@@ -32,7 +36,7 @@ export default function Home() {
   const loadInfo = async () => {
     console.log(wallet);
     const sdk = new ThirdwebSDK("polygon");
-    const contract = await sdk.getContract("0x6619B3D7bCcb53F039C9905E190158e694E4A2B4", abi);
+    const contract = await sdk.getContract("0x828a367Aa16C74E1595e970D2a13fc42c51bDc56", abi);
     const contractToken = await sdk.getContract("0x31B4245d9f88DA6Fa01A14398adA46b177c7F2ba", abiToken);
 
     if (wallet != undefined) {
@@ -58,11 +62,22 @@ export default function Home() {
       setPayedExtra(parseInt(users.payedExtra._hex,16))
       setTotalTree(parseInt(users.totalTree._hex,16))
       
-      const balanceContrato = await contractToken.call("balanceOf", ["0x6619B3D7bCcb53F039C9905E190158e694E4A2B4"]);
+      const balanceContrato = await contractToken.call("balanceOf", ["0x828a367Aa16C74E1595e970D2a13fc42c51bDc56"]);
       const balanceVault = await contractToken.call("balanceOf", ["0x3a74C3d3c9F197A4E1f8DEC55031C8f5931F9FFe"]);
+      const balancePersonal = await contractToken.call("balanceOf", [wallet]);
 
       setBalanceContrato(parseInt(balanceContrato._hex,16))
       setBalanceVault(parseInt(balanceVault._hex,16))
+      setBalancePersonal(parseInt(balancePersonal._hex,16))
+
+
+      const totalPayed = await contract.call("totalPayed", []);
+      const totalDistributed = await contract.call("totalDistributed", []);
+      const totalExtra = await contract.call("totalExtra", []);
+
+      setTotalPayed(parseInt(totalPayed._hex,16))
+      setTotalDistributed(parseInt(totalDistributed._hex,16))
+      setTotalExtra(parseInt(totalExtra._hex,16))
 
       setInfoPools({ data: updatedData, status: true });
     }
@@ -86,9 +101,9 @@ export default function Home() {
     const sdk = ThirdwebSDK.fromSigner(signer, Polygon);
 
     const contractToken = await sdk.getContract("0x31B4245d9f88DA6Fa01A14398adA46b177c7F2ba", abiToken);
-    await contractToken.call("approve", ["0x6619B3D7bCcb53F039C9905E190158e694E4A2B4", ethers.constants.MaxUint256]);
+    await contractToken.call("approve", ["0x828a367Aa16C74E1595e970D2a13fc42c51bDc56", ethers.constants.MaxUint256]);
 
-    const contract = await sdk.getContract("0x6619B3D7bCcb53F039C9905E190158e694E4A2B4", abi);
+    const contract = await sdk.getContract("0x828a367Aa16C74E1595e970D2a13fc42c51bDc56", abi);
 
     if (referral != "") {
       await contract.call("joinPool", [pool, referral, wallet]);
@@ -124,11 +139,19 @@ export default function Home() {
                 <br />
                 <p>Balance Vault: {balanceVault / 1000000}</p>
                 <br />
+                <p>Total pagado en pools: {totalPayed / 1000000}</p>
+                <br />
+                <p>Total distribuido referidos : {totalDistributed / 1000000}</p>
+                <br />
+                <p>Total pagado en excedentes al pasar de pools: {totalExtra / 1000000}</p>
+                <br />
                 <br />
                 <br />
 
                 <p>INFO PERSONAL</p>
                 <p>Wallet conectada: {wallet}</p>
+                <br />
+                <p>Balance personal: {balancePersonal / 1000000}$</p>
                 <br />
                 <p>Sponsor: {referralOfUser}</p>
                 <br />
